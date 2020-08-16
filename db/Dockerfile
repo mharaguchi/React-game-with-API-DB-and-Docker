@@ -10,5 +10,4 @@ ENV sa_password Password!
 ENV MSSQL_PID Express
 
 CMD /bin/bash ./entrypoint.sh
-# CMD /opt/mssql-tools/bin/sqlcmd -i /usr/src/app/init.sql && .\start -sa_password $env:sa_password \
-# -ACCEPT_EULA $env:ACCEPT_EULA -attach_dbs \"$env:attach_dbs\" -Verbose
+
