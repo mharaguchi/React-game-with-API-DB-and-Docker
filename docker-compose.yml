@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+    db:
+        container_name: db
+        build: ./db
+        ports:
+          - "1466:1433"
+        environment:
+            SA_PASSWORD: "Password!"
+            ACCEPT_EULA: "Y"
