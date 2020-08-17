@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {v4 as uuidv4} from 'uuid';
 import './index.css';
 
 function Square(props) {
@@ -43,6 +44,20 @@ class Board extends React.Component {
     }
 }
 
+function GameId(props){
+    return (
+        <div>
+            <div>Curent Game ID: {props.value}</div>
+            <input
+                type="text"
+            />        
+            <button className="gameIdLoad" onClick={props.onClick}>
+                Load Game
+            </button>
+        </div>
+    )
+}
+
 class Game extends React.Component {
     constructor(props) {
         super(props);
@@ -52,12 +67,17 @@ class Game extends React.Component {
             }],
             stepNumber: 0,
             xIsNext: true,
+            gameId: uuidv4()
         };
     }
     jumpTo(step) {
         this.setState({
             stepNumber: step,
             xIsNext: (step % 2) === 0,
+            gameId: step > 0 ? this.state.gameId : uuidv4(),
+            history: step > 0 ? this.state.history : [{
+                squares: Array(9).fill(null),
+            }]
         });
     }
     handleClick(i) {
@@ -76,6 +96,9 @@ class Game extends React.Component {
             xIsNext: !this.state.xIsNext,
         });
     }
+    handleGameIdLoad(gameIdInput){
+        this.setState({ gameId: gameIdInput})
+    }
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
@@ -84,7 +107,7 @@ class Game extends React.Component {
         const moves = history.map((step, move) => {
             const desc = move ?
                 'Go to move #' + move :
-                'Go to game start';
+                'New game';
             return (
                 <li key={move}>
                     <button onClick={() => this.jumpTo(move)}>{desc}</button>
@@ -108,6 +131,7 @@ class Game extends React.Component {
                     />
                 </div>
                 <div className="game-info">
+                    <GameId value={this.state.gameId} onClick={this.handleGameIdLoad} />
                     <div>{status}</div>
                     <ol>{moves}</ol>
                 </div>
