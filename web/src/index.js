@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {v4 as uuidv4} from 'uuid';
+import axios from 'axios';
 import './index.css';
 
 function Square(props) {
@@ -44,18 +45,30 @@ class Board extends React.Component {
     }
 }
 
-function GameId(props){
-    return (
-        <div>
-            <div>Curent Game ID: {props.value}</div>
-            <input
-                type="text"
-            />        
-            <button className="gameIdLoad" onClick={props.onClick}>
-                Load Game
-            </button>
-        </div>
-    )
+class GameId extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            loadGameId: ""
+        };
+    }
+    handleChange = e => {
+        this.setState({ loadGameId: e.target.value})
+    }
+    handleClick = () => {
+        this.props.handleGameIdLoad(this.state.loadGameId);
+    }
+    render() {
+        return(
+            <div>
+                <div>Current Game ID: {this.props.currentGameId}</div>
+                <input type="text" onChange={this.handleChange} value={this.state.loadGameId}/>        
+                <button className="gameIdLoad" onClick={this.handleClick}>
+                    Load Game
+                </button>
+            </div>
+        );
+    }
 }
 
 class Game extends React.Component {
@@ -67,7 +80,7 @@ class Game extends React.Component {
             }],
             stepNumber: 0,
             xIsNext: true,
-            gameId: uuidv4()
+            gameId: uuidv4(),
         };
     }
     jumpTo(step) {
@@ -80,7 +93,7 @@ class Game extends React.Component {
             }]
         });
     }
-    handleClick(i) {
+    async handleClick(i) {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
@@ -95,9 +108,54 @@ class Game extends React.Component {
             stepNumber: history.length,
             xIsNext: !this.state.xIsNext,
         });
+        const gameState = {
+            id: this.state.gameId,
+            gameId: this.state.gameId,
+            history: JSON.stringify(history.concat([{
+                squares: squares,
+            }])),
+            turnNumber: history.length
+        }
+        console.log(gameState);
+        await axios.post("http://localhost:19530/TicTacToe/SaveGameState", 
+                { gameId: gameState.gameId, history: gameState.history, turnNumber: gameState.turnNumber }, 
+                { headers: { 'Content-Type': 'application/json' }}
+            ).then((response) => {
+                console.log(response.data)
+            });
     }
-    handleGameIdLoad(gameIdInput){
-        this.setState({ gameId: gameIdInput})
+    handleGameIdLoad = async gameIdInput => {
+        console.log(gameIdInput);
+        var that = this;
+        await axios.get("http://localhost:19530/TicTacToe/GetGameState",
+                { params: { gameId: gameIdInput }},
+                { headers: { 'Content-Type': 'application/json' }}
+            ).then(function(response) {
+                console.log("this response");
+                console.log(that);
+                    const gameState = {
+                        gameId: response.data.gameId,
+                        turnNumber: response.data.turnNumber,
+                        history: response.data.history
+                    };
+                    that.setState({
+                        stepNumber: gameState.turnNumber,
+                        xIsNext: (gameState.turnNumber % 2) === 0,
+                        gameId: gameState.gameId,
+                        history: JSON.parse(gameState.history)
+                    });
+                // }).then((gameState) => {
+                //     console.log("this gamestate");
+                //     console.log(this);
+                //     console.log(gameState);
+                //     console.log("calling loadgame");
+                //     }.bind(this));
+                //     console.log("here");
+                //console.log(response);
+            }).catch((error) => {
+                console.log(error);
+                alert("Could not load game " + gameIdInput + ".");
+            });
     }
     render() {
         const history = this.state.history;
@@ -131,7 +189,7 @@ class Game extends React.Component {
                     />
                 </div>
                 <div className="game-info">
-                    <GameId value={this.state.gameId} onClick={this.handleGameIdLoad} />
+                    <GameId currentGameId={this.state.gameId} handleGameIdLoad={this.handleGameIdLoad} />
                     <div>{status}</div>
                     <ol>{moves}</ol>
                 </div>

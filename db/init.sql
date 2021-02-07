@@ -7,14 +7,14 @@ GO
 CREATE TABLE GameStates(
     ID UNIQUEIDENTIFIER PRIMARY KEY default NEWID(),
     GameID UNIQUEIDENTIFIER,
-    History varchar(255),
+    History varchar(1000),
     TurnNumber int
 )
 GO
 
 CREATE PROCEDURE UpdateOrInsertGameState
 @GameID UNIQUEIDENTIFIER,
-@History varchar(255),
+@History varchar(1000),
 @TurnNumber int
 AS
     SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;

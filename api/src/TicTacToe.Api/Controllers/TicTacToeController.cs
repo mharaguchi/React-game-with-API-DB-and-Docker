@@ -23,11 +23,18 @@ namespace TicTacToe.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        public async Task<GameState> GetGameStateAsync(Guid gameId)
+        public async Task<ActionResult<GameState>> GetGameStateAsync(Guid gameId)
         {
             //TODO: Validate input
-
-            return await _manager.GetGameStateAsync(gameId); 
+            var result = await _manager.GetGameStateAsync(gameId);
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         [HttpPost]
