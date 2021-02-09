@@ -1,10 +1,27 @@
-version: "3.8"
+version: '3.8'
+
 services:
-    db:
-        container_name: db
-        build: ./db
-        ports:
-          - "1466:1433"
-        environment:
-            SA_PASSWORD: "Password!"
-            ACCEPT_EULA: "Y"
+  db:
+    container_name: db
+    build: ./db
+    ports:
+      - "1466:1433"
+    environment:
+      SA_PASSWORD: "Password!"
+      ACCEPT_EULA: "Y"
+  tictactoeapi:
+    image: tictactoeapi
+    build:
+      context: .
+      dockerfile: api/src/TicTacToe.Api/Dockerfile
+    ports:
+      - "19350:19350"
+  tictactoe:
+    image: tictactoe
+    build:
+      context: web
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3000:3000

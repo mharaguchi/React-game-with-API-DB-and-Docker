@@ -1,5 +1,5 @@
 # n-tier-tictactoe
-Containerized n-tier tic-tac-toe web app
+Taking the sample React tic-tac-toe app and spicing it up. Added a DB layer and an API layer to save/load game state and Dockerized each piece.
 
 # Starting up the project
 
@@ -7,10 +7,7 @@ Containerized n-tier tic-tac-toe web app
 In a PowerShell window, go to \n-tier-tictactoe\
 Run docker-compose up
 
-## API
-Open api\TicTacToe.sln in Visual Studio
-Run Debug
+DB runs at localhost,1466
+API runs at http://localhost:19350 (http://localhost:19350/Swagger for Swagger UI)
+React app runs at http://localhost:5000
 
-## Web
-In a Powershell window, go to \web\
-Run npm start
