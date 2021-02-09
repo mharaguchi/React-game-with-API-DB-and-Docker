@@ -1,5 +1,5 @@
 # n-tier-tictactoe
-Taking the sample React tic-tac-toe app and spicing it up. Added a DB layer and an API layer to save/load game state and Dockerized each piece.
+Taking the sample React tic-tac-toe app and spicing it up. Added an MS SQL Server DB layer and a .NET Core Web API layer to save/load game state and Dockerized each piece.
 
 # Starting up the project
 
